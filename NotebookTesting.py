@@ -41,9 +41,6 @@ except ImportError:
         dataPath = os.path.join(os.environ['CASAPATH'].split()[0], 'casatestdata/')
         return os.path.join(dataPath,apath)
 
-# location of data
-data_path = './data/'
-
 test_dict = {}
 class CasaTest(unittest.TestCase):
   
@@ -494,8 +491,9 @@ class CasaTest(unittest.TestCase):
 
 class StandardTest(CasaTest):
 
-    def __init__(self, ms_file='ms_file.ms'):
+    def __init__(self, ms_file='ms_file.ms', data_path='data/'):
         self.ms_file = ms_file
+        self.data_path = data_path
         super().__init__()
 
     @stats_dict(test_dict)
@@ -508,7 +506,7 @@ class StandardTest(CasaTest):
         print(file_name)
         img = os.getcwd()+'/'+file_name+'1'
         print(img)
-        self.prepData(data_path+self.ms_file)
+        self.prepData(self.data_path+self.ms_file)
 
         print("\nSTARTING: iter0 routine")
         
@@ -868,28 +866,28 @@ class StandardTest(CasaTest):
         failed=self.filter_report(report)      
 
 #        add_to_dict(self, output = test_dict, dataset = "E2E6.1.00034.S_tclean.ms")
-        add_to_dict(self, output = test_dict, dataset = self.ms_file)
+#        add_to_dict(self, output = test_dict, dataset = self.ms_file)
 
         
         
-        self.modify_dict(test_dict, 'test_standard_cube', self.parallel)
+#        self.modify_dict(test_dict, 'test_standard_cube', self.parallel)
         
-        print('--> check_dict_vals finished.')
+#        print('--> check_dict_vals finished.')
         
-        test_dict['test_standard_cube']['report'] = report
-        test_dict['test_standard_cube']['images'] = []
+#        test_dict['test_standard_cube']['report'] = report
+#        test_dict['test_standard_cube']['images'] = []
         
-        print('--> dict_mods finished.')
+#        print('--> dict_mods finished.')
 
-        img = shutil._basename(img)
-        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    # imview does not import
-        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0]) # imview does not import
+#        img = shutil._basename(img)
+#        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    # imview does not import
+#        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0]) # imview does not import
 
-        print('--> mom8_creator finished.')
+#        print('--> mom8_creator finished.')
 
-        test_dict['test_standard_cube']['images'].extend((img+'.image.moment8.png',img+'.residual.moment8.png'))
+#        test_dict['test_standard_cube']['images'].extend((img+'.image.moment8.png',img+'.residual.moment8.png'))
 
-        test_dict['test_standard_cube']['images'].append(img+'.image.profile.png')
+#        test_dict['test_standard_cube']['images'].append(img+'.image.profile.png')
 
         self.assertTrue(th.check_final(pstr = report), msg = failed)
 
