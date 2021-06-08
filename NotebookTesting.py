@@ -889,5 +889,5 @@ class StandardTest(CasaTest):
 
 #        test_dict['test_standard_cube']['images'].append(img+'.image.profile.png')
 
-        self.assertTrue(th.check_final(pstr = report), msg = failed)
+        th.check_final(pstr = report)
 
