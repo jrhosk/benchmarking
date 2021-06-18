@@ -50,12 +50,13 @@ class CasaTest():
         self._myia = _ia
         self.epsilon = 0.01 # sets epsilon as a percentage (1%)
         self.msfile = ''
+        self.report = ''
         self.img_subdir = './'
         self.parallel = False
         if ParallelTaskHelper.isMPIEnabled():
             self.parallel = True
         
-        #unittest.TestCase.__init__(self)
+         #unittest.TestCase.__init__(self)
 
         print('Finished CasaTest initialization.')
 
@@ -491,6 +492,9 @@ class CasaTest():
         ''' Remove a specified prefix string from string '''
         return string[string.startswith(prefix) and len(prefix):]
 
+    def analysis_report(self):
+        return print(self.report)
+
 class StandardTest(CasaTest):
 
     def __init__(self, ms_file='ms_file.ms', data_path='data/'):
@@ -865,8 +869,8 @@ class StandardTest(CasaTest):
             report += self.check_dict_vals_beam(exp_bmaj_dict, bmaj_dict, '.image bmaj', epsilon=self.epsilon)
             report += self.check_dict_vals_beam(exp_pa_dict, pa_dict, '.image pa', epsilon=self.epsilon)
 
-        failed=self.filter_report(report)
-        print('Report Summary:\n' + failed)      
+        failed=self.filter_report(report)      
+        self.report = report
 
 #        add_to_dict(self, output = test_dict, dataset = "E2E6.1.00034.S_tclean.ms")
 #        add_to_dict(self, output = test_dict, dataset = self.ms_file)
