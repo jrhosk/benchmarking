@@ -25,6 +25,7 @@ try:
     from casatasks import casalog, delmod, imsubimage, tclean, uvsub, imhead, imsmooth, immath, widebandpbcor, immoments#, imview
     from casatasks.private.parallel.parallel_task_helper import ParallelTaskHelper
     from casatasks.private.imagerhelpers.parallel_imager_helper import PyParallelImagerHelper
+    from casaviewer import imview
 
     CASA6 = True
     _ia = image()
@@ -42,7 +43,8 @@ except ImportError:
         return os.path.join(dataPath,apath)
 
 test_dict = {}
-class CasaTest(unittest.TestCase):
+#class CasaTest(unittest.TestCase):
+class CasaTest():
   
     def __init__(self):
         self._myia = _ia
@@ -53,7 +55,7 @@ class CasaTest(unittest.TestCase):
         if ParallelTaskHelper.isMPIEnabled():
             self.parallel = True
         
-        unittest.TestCase.__init__(self)
+        #unittest.TestCase.__init__(self)
 
         print('Finished CasaTest initialization.')
 
@@ -881,8 +883,8 @@ class StandardTest(CasaTest):
 #        print('--> dict_mods finished.')
 
 #        img = shutil._basename(img)
-#        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    # imview does not import
-#        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0]) # imview does not import
+#        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    
+#        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0])
 
 #        print('--> mom8_creator finished.')
 
