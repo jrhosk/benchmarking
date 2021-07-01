@@ -89,7 +89,7 @@ from casatestutils import stats_dict
 CASA6 = False
 try:
     from casatools import ctsys, quanta, measures, image, vpmanager, calibrater
-    from casatasks import casalog, delmod, imsubimage, tclean, uvsub, imhead, imsmooth, immath, widebandpbcor, immoments#, imview
+    from casatasks import casalog, delmod, imsubimage, tclean, uvsub, imhead, imsmooth, immath, widebandpbcor, immoments
     from casatasks.private.parallel.parallel_task_helper import ParallelTaskHelper
     from casatasks.private.imagerhelpers.parallel_imager_helper import PyParallelImagerHelper
     from casaviewer import imview
@@ -455,8 +455,7 @@ class test_tclean_base(unittest.TestCase):
         """
 
         immoments(imagename = image, moments = 8, outfile = image+'.moment8')
-        imview(raster={'file': image+'.moment8', 'range': range_list}, 
-               out = {'file': image+'.moment8.png'})
+        imview(raster={'file': image+'.moment8', 'range': range_list}, out = {'file': image+'.moment8.png'})
         subprocess.call('mogrify -trim '+image+'.moment8.png', shell=True)
 
     def cube_profile_fit(self, image, max_loc, nchan):
@@ -959,11 +958,11 @@ class Test_standard(test_tclean_base):
 
 #### How to produce mom8 images in this environment
 # 
-#        img = shutil._basename(img)
-#        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    
-#        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0])
+        img = shutil._basename(img)
+        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    
+        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0])
 
-#        print('--> mom8_creator finished.')
+        print('--> mom8_creator finished.')
 
 #        test_dict['test_standard_cube']['images'].extend((img+'.image.moment8.png',img+'.residual.moment8.png'))
 
