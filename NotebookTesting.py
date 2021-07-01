@@ -1,3 +1,70 @@
+##########################################################################
+##########################################################################
+# test_stk_alma_pipeline_imaging.py
+#
+# Copyright (C) 2018
+# Associated Universities, Inc. Washington DC, USA.
+#
+# This script is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+# License for more details.
+#
+# [https://open-jira.nrao.edu/browse/CAS-12428]
+#
+#
+##########################################################################
+
+'''
+Datasets (MOUS)
+E2E6.1.00034.S (uid://A002/Xcff05c/X1ec)
+2018.1.00879.S (uid://A001/X133d/X169f)
+E2E6.1.00020.S (uid://A002/Xcff05c/Xe5)
+2017.1.00750.T (uid://A001/X131b/X57)
+
+Test list - 21 total
+1a.  Single field(SF) cube with perchanweightdensity=False(pcwdF), weighting=briggs - E2E6.1.00034.S
+1b.  SF cube with pcwdT, weighting=briggs - E2E6.1.00034.S
+1c.  SF cube with pcwdT, weighting=briggsbwtaper - E2E6.1.00034.S
+2.   SF MFS - E2E6.1.00020.S
+3.   SF mtmfs - E2E6.1.00020.S
+4a.  SF ephemeris cube (multi-EB) with pcwdF+briggs - 2017.1.00750.T
+4b.  SF ephemeris cube (multi-EB) with pcwdT+briggs - 2017.1.00750.T
+4c.  SF ephemeris cube (multi-EB) with pcwdT+briggsbwtaper - 2017.1.00750.T
+5.   SF ephemeris MFS - 2018.1.00879.S
+6.   SF ephemeris mtmfs - 2018.1.00879.S
+7.   SF Calibrator - E2E6.1.00034.S
+8.   SF ephemeris Calibrator - 2018.1.00879.S  
+9a.  Mosaic cube with pcwdF, briggs- E2E6.1.00034.S
+9b.  Mosaic cube with pcwdT+brigs- E2E6.1.00034.S
+9c.  Mosaic cube with pcwdT+briggsbwtaper- E2E6.1.00034.S
+10.  Mosaic MFS - E2E6.1.00020.S
+11.  Mosaic mtmfs - E2E6.1.00020.S
+12a. Mosaic ephemeris cube with pcwdF- 2018.1.00879.S
+12b. Mosaic ephemeris cube with pcwdT+briggs - 2018.1.00879.S
+12c. Mosaic ephemeris cube with pcwdT+briggsbwtaper - 2018.1.00879.S
+13.  Mosaic ephemeris MFS - 2018.1.00879.S
+14.  Mosaic ephemeris mtmfs - 2018.1.00879.S
+
+Each test stores reference values in dictionaries for the metrics 
+to be tested:
+The following variable names are used:
+the standard default sets are,
+exp_im_stats, exp_mask_stats, exp_pb_stats, exp_psf_stats, 
+exp_model_stats, exp_resid_stats, exp_sumwt_stats
+exp_wt_stats (for mosaic)
+Addtionally, for cube imaging (if self.parallel=True), 
+exp_bmin_dict, exp_bmaj_dict, exp_pa_dict
+And for mtmfs
+exp_im1_stats, exp_model1_stats, exp_resid1_stats, exp_sumwt1_stats
+
+'''
+
 import os
 import glob
 import sys
@@ -33,8 +100,8 @@ try:
 
 except ImportError:
     from __main__ import default  # reset given task to its default values
-    from tasks import *  # Imports all casa tasks
-    from taskinit import *  # Imports all casa tools
+    from tasks import *           # Imports all casa tasks
+    from taskinit import *        # Imports all casa tools
     from parallel.parallel_task_helper import ParallelTaskHelper
 
     _ia = iatool()
@@ -42,23 +109,34 @@ except ImportError:
         dataPath = os.path.join(os.environ['CASAPATH'].split()[0], 'casatestdata/')
         return os.path.join(dataPath,apath)
 
-test_dict = {}
-#class CasaTest(unittest.TestCase):
-class CasaTest():
-  
-    def __init__(self):
+    #data_path = ctsys_resolve('./') This should be added back for unittest
+data_path = './data/'
+
+    # save the dictionaries of the metrics to files (per tests) 
+    # mostly useful for the maintenace (updating the expected metric i
+    # parameters based
+    # on the current metrics)
+savemetricdict=False
+
+class test_tclean_base(unittest.TestCase):
+    def setUp(self):
         self._myia = _ia
         self.epsilon = 0.01 # sets epsilon as a percentage (1%)
-        self.msfile = ''
-        self.report = ''
-        self.img_subdir = './'
+        self.msfile = ""
+        self.img_subdir = 'testdir'
         self.parallel = False
         if ParallelTaskHelper.isMPIEnabled():
             self.parallel = True
-        
-         #unittest.TestCase.__init__(self)
 
         print('Finished CasaTest initialization.')
+
+    def tearDown(self):
+        #print("TEST_DICT=",test_dict)
+        generate_weblog("tclean_ALMA_pipeline",test_dict)
+        print("Closing ia tool")
+        self._myia.done()
+        """ don't delete it all """
+#        self.delData()
 
     # Separate functions here, for special-case tests that need their own MS.
     def prepData(self, msname=[""]):
@@ -251,25 +329,27 @@ class CasaTest():
                 stats_dict['regn_sum'] = self._myia.statistics(region=fit_regions[1])['sum'][0]
             
             else:
-                    stats_dict['regn_sum'] = self._myia.statistics(region=fit_region)['sum'][0]
+                stats_dict['regn_sum'] = self._myia.statistics(region=fit_region)['sum'][0]
             
             if ('image' in imagename and 'mosaic_cube_eph' not in imagename) or 'pb' in imagename or ('psf' in imagename and 'cube' not in imagename):
-                    try:
-                        fit_dict = self._myia.fitcomponents( region=fit_region)['results']['component0']    
-                        stats_dict['fit'] = [fit_dict['peak']['value'], 
-                                             fit_dict['shape']['majoraxis']['value'], 
-                                             fit_dict['shape']['minoraxis']['value']]
-                        stats_dict['fit_loc_chan'] = fit_dict['spectrum']['channel']
-                        stats_dict['fit_loc_freq'] = fit_dict['spectrum']['frequency']['m0']['value']
-                        stats_dict['fit_pix'] = fit_dict['pixelcoords'].tolist()
+                try:
+                    fit_dict = self._myia.fitcomponents( region=fit_region)['results']['component0']    
+                    stats_dict['fit'] = [
+                        fit_dict['peak']['value'], 
+                        fit_dict['shape']['majoraxis']['value'], 
+                        fit_dict['shape']['minoraxis']['value']
+                    ]
+                    stats_dict['fit_loc_chan'] = fit_dict['spectrum']['channel']
+                    stats_dict['fit_loc_freq'] = fit_dict['spectrum']['frequency']['m0']['value']
+                    stats_dict['fit_pix'] = fit_dict['pixelcoords'].tolist()
                 
-                    except KeyError:
-                        stats_dict['fit'] = [1.0, 1.0, 1.0]
-                        stats_dict['fit_loc_chan'] = 1.0
-                        stats_dict['fit_loc_freq'] = 1.0
-                        stats_dict['fit_pix'] = [1.0, 1.0]
+                except KeyError:
+                    stats_dict['fit'] = [1.0, 1.0, 1.0]
+                    stats_dict['fit_loc_chan'] = 1.0
+                    stats_dict['fit_loc_freq'] = 1.0
+                    stats_dict['fit_pix'] = [1.0, 1.0]
 
-                        # stats returned for .image(.tt0)
+        # stats returned for .image(.tt0)
         if 'image' in imagename:
             commonbeam = self._myia.commonbeam()
             stats_dict['com_bmin'] = commonbeam['minor']['value']
@@ -426,28 +506,6 @@ class CasaTest():
       
             return ret
 
-    def modify_dict(self, output=None, testname=None, parallel=None):
-        ''' Modified test_dict costructed by casatestutils add_to_dict to include only 
-            the task commands executed and also add self.parallel value to the dictionary.
-            The cube imaging cases usually have if-else conditional based on parallel mode is on or not
-            to trigger different set of tclean commands.
-            Assumption: self.parallel is used to trigger different tclean commands at iter1 step.
-            For self.parallel=True, iter1 has two tclean commands (2nd and 3rd tclean commands within
-            each relevante test(cube) and so in test_dict['taskcall'], 1st(iter0) and 2nd and 3rd commands
-            are the ones acutually executed and should remove 4th (self.parallel=False) case.
-        '''
-
-        if testname in output:
-            if 'taskcall' in output[testname] and len(output[testname]['taskcall'])==4: 
-                if parallel:
-                  # 0,1,2th in the list are used pop last one
-                    output[testname]['taskcall'].pop()
-            else:
-                output[testname]['taskcall'].pop(1)
-                output[testname]['taskcall'].pop(1)
-        
-            output[testname]['self.parallel']=parallel
-
     def save_dict_to_file(self, topkey, indict, outfilename, appendversion=True, outformat='JSON'):
         """ function that will save input Python dictionaries to a JSON file (default)
             or pickle file. topkey is will be added as a top key for output (nested) dictionary 
@@ -479,6 +537,29 @@ class CasaTest():
                 json.dump(nestedDict, outf)
         else:
             print("no saving with format:", outformat)
+    
+    def modify_dict(self, output=None, testname=None, parallel=None):
+        ''' Modified test_dict costructed by casatestutils add_to_dict to include only 
+            the task commands executed and also add self.parallel value to the dictionary.
+            The cube imaging cases usually have if-else conditional based on parallel mode is on or not
+            to trigger different set of tclean commands.
+            Assumption: self.parallel is used to trigger different tclean commands at iter1 step.
+            For self.parallel=True, iter1 has two tclean commands (2nd and 3rd tclean commands within
+            each relevante test(cube) and so in test_dict['taskcall'], 1st(iter0) and 2nd and 3rd commands
+            are the ones acutually executed and should remove 4th (self.parallel=False) case.
+        '''
+
+        if testname in output:
+            if 'taskcall' in output[testname] and len(output[testname]['taskcall'])==4: 
+                if parallel:
+                  # 0,1,2th in the list are used pop last one
+                    output[testname]['taskcall'].pop()
+            else:
+                output[testname]['taskcall'].pop(1)
+                output[testname]['taskcall'].pop(1)
+        
+            output[testname]['self.parallel']=parallel
+
 
     def save_dict_to_disk(self, indict, outfilename):
         """ 
@@ -495,24 +576,18 @@ class CasaTest():
     def analysis_report(self):
         return print(self.report)
 
-class StandardTest(CasaTest):
-
-    def __init__(self, ms_file='ms_file.ms', data_path='data/'):
-        self.ms_file = ms_file
-        self.data_path = data_path
-        super().__init__()
+test_dict = {}
+class Test_standard(test_tclean_base):
 
     @stats_dict(test_dict)
-    def standard_cube(self):
+    def test_standard_cube(self):
         ''' Standard (single field) cube imaging - central field of SMIDGE_NWCloud (field 3), spw 22 '''
 
         self._testMethodName = 'test_standard_cube'
         test_name = self._testMethodName
         file_name = self.remove_prefix(test_name, 'test_')+'.iter'
-        print(file_name)
         img = os.getcwd()+'/'+file_name+'1'
-        print(img)
-        self.prepData(self.data_path+self.ms_file)
+        self.prepData(data_path + 'E2E6.1.00034.S_tclean.ms')
 
         print("\nSTARTING: iter0 routine")
         
@@ -607,7 +682,6 @@ class StandardTest(CasaTest):
                    restoringbeam='common', parallel=False, verbose=True)
 
         # Check that images, history, and keywords exist th.checkall > th.check_imexist()
-        print('Image list:\n\n' + img)
         report0 = th.checkall(imgexist = self.image_list(img, 'standard'))
 
         # .image report
@@ -872,20 +946,19 @@ class StandardTest(CasaTest):
         failed=self.filter_report(report)      
         self.report = report
 
-#        add_to_dict(self, output = test_dict, dataset = "E2E6.1.00034.S_tclean.ms")
-#        add_to_dict(self, output = test_dict, dataset = self.ms_file)
+        add_to_dict(self, output = test_dict, dataset = "E2E6.1.00034.S_tclean.ms")
+        
+        self.modify_dict(test_dict, 'test_standard_cube', self.parallel)
+        
+        print('--> check_dict_vals finished.')
+        
+        test_dict['test_standard_cube']['report'] = report
+        test_dict['test_standard_cube']['images'] = []
+        
+        print('--> dict_mods finished.')
 
-        
-        
-#        self.modify_dict(test_dict, 'test_standard_cube', self.parallel)
-        
-#        print('--> check_dict_vals finished.')
-        
-#        test_dict['test_standard_cube']['report'] = report
-#        test_dict['test_standard_cube']['images'] = []
-        
-#        print('--> dict_mods finished.')
-
+#### How to produce mom8 images in this environment
+# 
 #        img = shutil._basename(img)
 #        self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    
 #        self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0])
@@ -896,5 +969,35 @@ class StandardTest(CasaTest):
 
 #        test_dict['test_standard_cube']['images'].append(img+'.image.profile.png')
 
-#        th.check_final(pstr = report)
+        if savemetricdict:
+            ### serialize ndarray in mask_stats_dcit
+            mask_stats_mod_dict = copy.deepcopy(mask_stats_dict)
+            mask_stats_mod_dict['mask'] = mask_stats_dict['mask'].tolist()
+            #create a nested dictionary containing exp dictionaries to save
+            savedict = {}
+            #list of stats to save
+            # im_stats, mask_stats, pb_stats, psf_stats,\
+            # model_stats, resid_stats, sumwt_stats]
+            savedict['im_stats_dict']=im_stats_dict
+            savedict['mask_stats_dict']=mask_stats_mod_dict
+            savedict['pb_stats_dict']=pb_stats_dict
+            savedict['psf_stats_dict']=psf_stats_dict
+            savedict['model_stats_dict']=model_stats_dict
+            savedict['resid_stats_dict']=resid_stats_dict
+            savedict['sumwt_stats_dict']=sumwt_stats_dict
+            
+            savedict['bmin_dict']=bmin_dict
+            savedict['bmaj_dict']=bmaj_dict
+            savedict['pa_dict']=pa_dict
 
+            self.save_dict_to_file(test_name,savedict, test_name+'_current_metrics')
+
+        self.assertTrue(th.check_final(pstr = report), \
+            msg = failed)
+
+def suite():
+     return [Test_standard, Test_mosaic]
+
+# Main #
+if __name__ == '__main__':
+    unittest.main()
