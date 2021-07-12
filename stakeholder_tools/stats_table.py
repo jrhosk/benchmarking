@@ -39,8 +39,8 @@ class StatsTable():
 
 
             
-        self.json_measured = json_measured
-        self.json_expected = json_expected
+        self.__json_measured = json_measured
+        self.__json_expected = json_expected
         self.stakeholder_test = 'test_standard_cube'
         self.sub_test_stub = 'im_stats'
         self.df = None
@@ -58,7 +58,7 @@ class StatsTable():
         expected = []
         measured = []
         
-        with open(self.json_measured) as file: 
+        with open(self.__json_measured) as file: 
             js = json.loads(file.read())
     
 
@@ -71,7 +71,7 @@ class StatsTable():
                 keys.append(key)
                 measured.append(value)
             
-        with open(self.json_expected) as file:
+        with open(self.__json_expected) as file:
             js = json.loads(file.read())
     
         for key, value in js[self.stakeholder_test]['exp_' + self.sub_test_stub].items():
@@ -105,6 +105,44 @@ class StatsTable():
         color = 'gray' if val < 0 else 'black'
         
         return 'color: %s' % color
+    
+    @property
+    def json_measured(self):
+        """Getter funciton to get the measured metric values in JSON format.
+
+        Returns:
+            JSON object [JSON]: returns staekholder `measured` JSON object
+        """
+        with open(self.__json_measured) as file: 
+            js = json.loads(file.read())
+
+        return pn.pane.JSON(js, name='JSON', height=300, width=500)
+    
+    @json_measured.setter
+    def json_measured(self, measured):
+        """Setter funciton to set the measured metric file.
+        """
+
+        self.__json_measured = measured
+    
+    @property
+    def json_expected(self):
+        """Getter funciton to get the expected metric values in JSON format.
+
+        Returns:
+            JSON object [JSON]: returns staekholder `expected` JSON object
+        """
+        with open(self.__json_expected) as file: 
+            js = json.loads(file.read())
+
+        return pn.pane.JSON(js, name='JSON', height=300, width=500)
+
+    @json_expected.setter
+    def json_expected(self, expected):
+        """Setter funciton to set the expected metric file.
+        """
+
+        self.__json_expected = expected
 
     def stats_table(self, tolerance = 0.05)->pn.widgets.Tabulator:
         """Builds and displays an interactive table containing the stakeholder tests results
