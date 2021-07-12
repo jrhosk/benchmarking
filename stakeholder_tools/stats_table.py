@@ -26,6 +26,7 @@ class StatsTable():
         self.json_expected = json_expected
         self.stakeholder_test = 'test_standard_cube'
         self.sub_test_stub = 'im_stats'
+        self.df = None
 
     def __build_stats_dataframe(self)->pd.DataFrame:
         """Parses the stakeholder JSON files and builds a pandas DataFrame 
@@ -63,11 +64,13 @@ class StatsTable():
             else:
                 expected.append(value[-1])
             
-        return pd.DataFrame({
+        self.df =  pd.DataFrame({
             'key': keys,
             'measured': measured,
             'expected': expected
         })
+
+        return self.df
 
     @staticmethod
     def __color_negative_red(val)->str:
