@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import panel as pn
 import param
+import os
 
 from bokeh.models.widgets.tables import NumberFormatter, BooleanFormatter
 
@@ -21,6 +22,22 @@ class StatsTable():
 
     def __init__(self, json_measured:str, json_expected:str):
         pn.extension(sizing_mode="stretch_width")
+
+        try:
+            if ~os.path.isfile(json_measured):
+                bad_file = json_measured
+                
+                raise FileNotFoundError
+
+            if ~os.path.isfile(json_expected):
+                bad_file = json_measured
+                
+                raise FileNotFoundError
+
+        except FileNotFoundError as err:
+            print(err + ': File doesn\'t exist: ' + bad_file)
+
+
             
         self.json_measured = json_measured
         self.json_expected = json_expected
