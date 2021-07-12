@@ -78,6 +78,7 @@ import matplotlib.pyplot as pyplot
 import json
 import casatools
 import casatasks
+import copy
 
 from casatestutils.imagerhelpers import TestHelpers
 th = TestHelpers()
@@ -116,7 +117,7 @@ data_path = './data/'
     # mostly useful for the maintenace (updating the expected metric i
     # parameters based
     # on the current metrics)
-savemetricdict=False
+savemetricdict=True
 
 class test_tclean_base(unittest.TestCase):
     def setUp(self):
@@ -234,7 +235,10 @@ class test_tclean_base(unittest.TestCase):
 
         self._myia.open(image)
 
-        bmin_dict = {}; bmaj_dict = {}; pa_dict = {}
+        bmin_dict = {} 
+        bmaj_dict = {} 
+        pa_dict = {}
+
         beam_dict = self._myia.restoringbeam()['beams']
         for item in beam_dict.keys():
             bmin_dict[item] = beam_dict[item]['*0']['minor']['value']
@@ -956,17 +960,14 @@ class Test_standard(test_tclean_base):
         
         print('--> dict_mods finished.')
 
-#### How to produce mom8 images in this environment
-# 
         img = shutil._basename(img)
         self.mom8_creator(image=img+'.image', range_list=[0.3, 1.0])    
         self.mom8_creator(image=img+'.residual', range_list=[0.3, 1.0])
 
         print('--> mom8_creator finished.')
 
-#        test_dict['test_standard_cube']['images'].extend((img+'.image.moment8.png',img+'.residual.moment8.png'))
-
-#        test_dict['test_standard_cube']['images'].append(img+'.image.profile.png')
+        test_dict['test_standard_cube']['images'].extend((img+'.image.moment8.png',img+'.residual.moment8.png'))
+        test_dict['test_standard_cube']['images'].append(img+'.image.profile.png')
 
         if savemetricdict:
             ### serialize ndarray in mask_stats_dcit
@@ -974,20 +975,23 @@ class Test_standard(test_tclean_base):
             mask_stats_mod_dict['mask'] = mask_stats_dict['mask'].tolist()
             #create a nested dictionary containing exp dictionaries to save
             savedict = {}
-            #list of stats to save
+            # list of stats to save
             # im_stats, mask_stats, pb_stats, psf_stats,\
             # model_stats, resid_stats, sumwt_stats]
+
             savedict['im_stats_dict']=im_stats_dict
-            savedict['mask_stats_dict']=mask_stats_mod_dict
-            savedict['pb_stats_dict']=pb_stats_dict
-            savedict['psf_stats_dict']=psf_stats_dict
-            savedict['model_stats_dict']=model_stats_dict
-            savedict['resid_stats_dict']=resid_stats_dict
-            savedict['sumwt_stats_dict']=sumwt_stats_dict
+            savedict['exp_im_stats_dict']=exp_im_stats
+#            savedict['mask_stats_dict']=mask_stats_mod_dict
+#            savedict['pb_stats_dict']=pb_stats_dict
+#            savedict['psf_stats_dict']=psf_stats_dict
+#            savedict['model_stats_dict']=model_stats_dict
+#            savedict['resid_stats_dict']=resid_stats_dict
+#            savedict['sumwt_stats_dict']=sumwt_stats_dict
             
-            savedict['bmin_dict']=bmin_dict
-            savedict['bmaj_dict']=bmaj_dict
-            savedict['pa_dict']=pa_dict
+            if self.parallel:
+                savedict['bmin_dict']=bmin_dict
+                savedict['bmaj_dict']=bmaj_dict
+                savedict['pa_dict']=pa_dict
 
             self.save_dict_to_file(test_name,savedict, test_name+'_current_metrics')
 
@@ -997,6 +1001,13 @@ class Test_standard(test_tclean_base):
 def suite():
      return [Test_standard, Test_mosaic]
 
+def test():
+    standard = Test_standard()
+    standard.setUp()
+    standard.test_standard_cube()
+
+
 # Main #
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
+    test()
