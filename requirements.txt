@@ -1,3 +1,4 @@
+pandas
 panel
 cycler==0.10.0
 kiwisolver==1.2.0

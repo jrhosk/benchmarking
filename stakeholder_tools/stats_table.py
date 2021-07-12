@@ -34,8 +34,8 @@ class StatsTable():
                 
                 raise FileNotFoundError
 
-        except FileNotFoundError as err:
-            print(err + ': File doesn\'t exist: ' + bad_file)
+        except FileNotFoundError:
+            print('File doesn\'t exist: ' + bad_file)
 
 
             
