@@ -24,12 +24,12 @@ class StatsTable():
         pn.extension(sizing_mode="stretch_width")
 
         try:
-            if ~os.path.isfile(json_measured):
+            if os.path.isfile(json_measured) is False:
                 bad_file = json_measured
                 
                 raise FileNotFoundError
 
-            if ~os.path.isfile(json_expected):
+            if os.path.isfile(json_expected) is False:
                 bad_file = json_measured
                 
                 raise FileNotFoundError
