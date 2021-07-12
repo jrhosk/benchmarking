@@ -1,7 +1,4 @@
-casadata==2021.5.24
-casatasks
-casatestutils
-casatools
+panel
 cycler==0.10.0
 kiwisolver==1.2.0
 matplotlib==3.2.1
