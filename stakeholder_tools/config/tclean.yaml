@@ -33,8 +33,12 @@ tclean-second-cycle:
  pblimit: 0.2
  deconvolver: "hogbom"
  niter: 20000
+ restoration: True
+ pbcor: True
  cyclefactor: 2 
  interactive: 0
+ restart: True
+ threshold: '0.354Jy'
  calcres: False
  calcpsf: False
  scales:

@@ -51,6 +51,7 @@ class TCleanOptionsBaseClass(param.Parameterized):
     savemodel = param.String(default='none')
     parallel = param.Boolean(False)
     verbose = param.Boolean(True)
+    restart = param.Boolean(False)
     calcres = param.Boolean(True)
     calcpsf = param.Boolean(True)
     
@@ -59,6 +60,9 @@ class TCleanOptionsBaseClass(param.Parameterized):
             config = yaml.full_load(file)
         
             self.niter = config['tclean-second-cycle']['niter']
+            self.pbcor = config['tclean-second-cycle']['pbcor']
+            self.restart = config['tclean-second-cycle']['restart']
             self.calcres = config['tclean-second-cycle']['calcres']
             self.calcpsf = config['tclean-second-cycle']['calcpsf']
-
+            self.threshold = config['tclean-second-cycle']['threshold']
+            self.restoration = config['tclean-second-cycle']['restoration']

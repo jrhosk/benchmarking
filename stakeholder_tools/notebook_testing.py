@@ -652,27 +652,60 @@ class Test_standard(test_tclean_base):
         self.copy_products(file_name+'0', file_name+'1')
 
         print("STARTING: iter1 routine")
+        self.read_configuration('config/tclean.yaml')
 
         # iter1 (restart)
         if self.parallel:
-            tclean('../' + self.vis, imagename=file_name+'1', field='1', \
-                spw=['0'], imsize=[80, 80], antenna=['0,1,2,3,4,5,6,7,8'], \
-                scan=['8,12,16'], intent='OBSERVE_TARGET#ON_SOURCE', \
-                datacolumn='data', cell=['1.1arcsec'], phasecenter='ICRS '
-                '00:45:54.3836 -073.15.29.413', stokes='I', specmode='cube', \
-                nchan=508, start='220.2526743594GHz', width='0.2441741MHz',\
-                outframe='LSRK', perchanweightdensity=False, \
-                usepointing=False, pblimit=0.2, nsigma=0.0, \
-                gridder='standard',  mosweight=False, \
-                deconvolver='hogbom', restoration=True, pbcor=True, \
-                weighting='briggs', robust=0.5, npixels=0, niter=20000, \
-                threshold='0.354Jy', interactive=0, usemask='auto'
-                '-multithresh', sidelobethreshold=1.25, noisethreshold=5.0, \
-                lownoisethreshold=2.0, negativethreshold=0.0, \
-                minbeamfrac=0.1, growiterations=75, dogrowprune=True, \
-                minpercentchange=1.0, fastnoise=False, restart=True, \
-                calcres=False, calcpsf=False, savemodel='none', \
-                parallel=True, verbose=True)
+            tclean(
+                vis='../data/' + self.vis, 
+                imagename=file_name+'1', 
+                field=self.field,
+                spw=self.spw, 
+                imsize=self.imsize, 
+                antenna=self.antenna, 
+                scan=self.scan, 
+                intent=self.intent, 
+                datacolumn=self.datacolumn, 
+                cell=self.cell, 
+                phasecenter=self.phasecenter, 
+                stokes=self.stokes, 
+                specmode=self.specmode, 
+                nchan=self.nchan, 
+                start=self.start, 
+                width=self.width,
+                outframe=self.outframe, 
+                perchanweightdensity=self.perchanweightdensity, 
+                usepointing=self.usepointing,
+                pblimit=self.pblimit, 
+                nsigma=self.nsigma, 
+                gridder=self.gridder, 
+                mosweight=self.mosweight, 
+                deconvolver=self.deconvolver, 
+                restoration=self.restoration, 
+                pbcor=self.pbcor, 
+                weighting=self.weighting, 
+                robust=self.robust, 
+                npixels=self.npixels, 
+                niter=self.niter, 
+                threshold=self.threshold, 
+                interactive=self.interactive, 
+                usemask=self.usemask, 
+                sidelobethreshold=self.sidelobethreshold, 
+                noisethreshold=self.noisethreshold, 
+                lownoisethreshold=self.lownoisethreshold, 
+                negativethreshold=self.negativethreshold, 
+                minbeamfrac=self.minbeamfrac, 
+                growiterations=self.growiterations,
+                dogrowprune=self.dogrowprune, 
+                minpercentchange=self.minpercentchange, 
+                fastnoise=self.fastnoise, 
+                restart=self.restart, 
+                calcres=self.calcres, 
+                calcpsf=self.calcpsf, 
+                savemodel=self.savemodel, 
+                restoringbeam=self.restoringbeam, 
+                parallel=self.parallel, 
+                verbose=self.verbose)
 
             # retrieve per-channel beam statistics (only in parallel)
             bmin_dict, bmaj_dict, pa_dict = \
@@ -682,53 +715,53 @@ class Test_standard(test_tclean_base):
             tclean(
                 vis='../data/' + self.vis, 
                 imagename=file_name+'1', 
-                field='1',
-                spw=['0'], 
-                imsize=[80, 80], 
-                antenna=['0,1,2,3,4,5,6,7,8'], 
-                scan=['8,12,16'], 
-                intent='OBSERVE_TARGET#ON_SOURCE', 
-                datacolumn='data', 
-                cell=['1.1arcsec'], 
-                phasecenter='ICRS 00:45:54.3836 -073.15.29.413', 
-                stokes='I', 
-                specmode='cube', 
-                nchan=508, 
-                start='220.2526743594GHz', 
-                width='0.2441741MHz',
-                outframe='LSRK', 
-                perchanweightdensity=False, 
-                usepointing=False,
-                pblimit=0.2, 
-                nsigma=0.0, 
-                gridder='standard', 
-                mosweight=False, 
-                deconvolver='hogbom', 
-                restoration=True, 
-                pbcor=True, 
-                weighting='briggs', 
-                robust=0.5, 
-                npixels=0, 
-                niter=20000, 
-                threshold='0.354Jy', 
-                interactive=0, 
-                usemask='auto-multithresh', 
-                sidelobethreshold=1.25, 
-                noisethreshold=5.0, 
-                lownoisethreshold=2.0, 
-                negativethreshold=0.0, 
-                minbeamfrac=0.1, 
-                growiterations=75,
-                dogrowprune=True, 
-                minpercentchange=1.0, 
-                fastnoise=False, 
-                restart=True, 
-                calcres=False, 
-                calcpsf=False, 
-                savemodel='none', 
-                restoringbeam='common', 
-                parallel=False, 
-                verbose=True)
+                field=self.field,
+                spw=self.spw, 
+                imsize=self.imsize, 
+                antenna=self.antenna, 
+                scan=self.scan, 
+                intent=self.intent, 
+                datacolumn=self.datacolumn, 
+                cell=self.cell, 
+                phasecenter=self.phasecenter, 
+                stokes=self.stokes, 
+                specmode=self.specmode, 
+                nchan=self.nchan, 
+                start=self.start, 
+                width=self.width,
+                outframe=self.outframe, 
+                perchanweightdensity=self.perchanweightdensity, 
+                usepointing=self.usepointing,
+                pblimit=self.pblimit, 
+                nsigma=self.nsigma, 
+                gridder=self.gridder, 
+                mosweight=self.mosweight, 
+                deconvolver=self.deconvolver, 
+                restoration=self.restoration, 
+                pbcor=self.pbcor, 
+                weighting=self.weighting, 
+                robust=self.robust, 
+                npixels=self.npixels, 
+                niter=self.niter, 
+                threshold=self.threshold, 
+                interactive=self.interactive, 
+                usemask=self.usemask, 
+                sidelobethreshold=self.sidelobethreshold, 
+                noisethreshold=self.noisethreshold, 
+                lownoisethreshold=self.lownoisethreshold, 
+                negativethreshold=self.negativethreshold, 
+                minbeamfrac=self.minbeamfrac, 
+                growiterations=self.growiterations,
+                dogrowprune=self.dogrowprune, 
+                minpercentchange=self.minpercentchange, 
+                fastnoise=self.fastnoise, 
+                restart=self.restart, 
+                calcres=self.calcres, 
+                calcpsf=self.calcpsf, 
+                savemodel=self.savemodel, 
+                restoringbeam=self.restoringbeam, 
+                parallel=self.parallel, 
+                verbose=self.verbose)
 
         # Check that images, history, and keywords exist th.checkall > th.check_imexist()
         report0 = th.checkall(imgexist = self.image_list(img, 'standard'))
