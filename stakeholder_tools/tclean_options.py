@@ -3,38 +3,62 @@ import param
 
 class TCleanOptionsBaseClass(param.Parameterized):
     vis = param.String(default="E2E6.1.00034.S_tclean.ms", doc="Measurement file.") 
-    imagename = param.String(default="test", doc="Name stub of output file.") 
-    imsize = param.Integer(512, bounds=(0, None))
-    cell = param.String(default="12.0arcsec", doc="Cell size") 
+    imagename = param.String(default="standard_cube", doc="Name stub of output file.") 
+    imsize = param.ListSelector(default=[80, 80])
+    cell = param.String(default="1.1arcsec", doc="Cell size") 
     specmode = param.String(default="cube", doc="Specmode") 
     interpolation = param.String(default="nearest", doc="") 
-    nchan = param.Integer(5, bounds=(1, 5000))
-    start = param.String(default="1.0GHz", doc="") 
-    width = param.String(default="0.2GHz", doc="") 
-    pblimit = param.Number(-0.00001)
+    nchan = param.Integer(508, bounds=(1, 5000))
+    start = param.String(default="220.2526743594GHz", doc="") 
+    width = param.String(default="0.2441741MHz", doc="") 
+    pblimit = param.Number(0.2)
     deconvolver = param.String(default="hogbom", doc="") 
-    niter = param.Integer(5000, bounds=(1, None))
+    niter = param.Integer(1, bounds=(0, None))
     cyclefactor = param.Integer(2, bounds=(1, 50))
     scales = param.ListSelector(default=[0, 3, 10], objects=[0, 3, 5, 7, 9, 10], precedence=0.5)
     interactive = param.Integer(0, doc="Interactive mode")
+    field = param.String(default='1')
+    spw = param.ListSelector(default=['0'])
+    antenna = param.ListSelector(default=['0,1,2,3,4,5,6,7,8'])
+    scan = param.ListSelector(default=['8,12,16'])
+    intent = param.String(default='OBSERVE_TARGET#ON_SOURCE')
+    datacolumn = param.String(default='data')
+    phasecenter = param.String(default='ICRS 00:45:54.3836 -073.15.29.413')
+    stokes= param.String(default='I')
+    outframe = param.String(default='LSRK') 
+    perchanweightdensity= param.Boolean(False)
+    gridder = param.String(default='standard')  
+    mosweight = param.Boolean(False)
+    usepointing = param.Boolean(False) 
+    restoration = param.Boolean(False)
+    pbcor = param.Boolean(False) 
+    weighting = param.String(default='briggs') 
+    restoringbeam = param.String('common')
+    robust = param.Number(default=0.5) 
+    npixels = param.Integer(default=0) 
+    threshold = param.String(default='0.0mJy')
+    nsigma = param.Number(default=0.0)
+    usemask = param.String(default='auto-multithresh')
+    sidelobethreshold = param.Number(1.25)
+    noisethreshold = param.Number(5.0)
+    lownoisethreshold = param.Number(2.0)
+    negativethreshold = param.Number(0.0) 
+    minbeamfrac = param.Number(0.1)
+    growiterations = param.Integer(75)
+    dogrowprune = param.Boolean(True)
+    minpercentchange = param.Number(1.0)
+    fastnoise = param.Boolean(False)
+    savemodel = param.String(default='none')
+    parallel = param.Boolean(False)
+    verbose = param.Boolean(True)
+    calcres = param.Boolean(True)
+    calcpsf = param.Boolean(True)
     
-    def read_configuration(self)->None:
-        with open('config/tclean.yaml') as file:
+    def read_configuration(self, config:str)->None:
+        with open(config) as file:
             config = yaml.full_load(file)
         
-            self.vis = config['tclean']['vis']
-            self.imagename = config['tclean']['imagename']
-            self.imsize = config['tclean']['imsize']
-            self.cell = config['tclean']['cell']
-            self.specmode = config['tclean']['specmode']
-            self.interpolation = config['tclean']['interpolation']
-            self.nchan = config['tclean']['nchan']
-            self.start = config['tclean']['start']
-            self.width = config['tclean']['width']
-            self.pblimit = config['tclean']['pblimit']
-            self.deconvolver = config['tclean']['deconvolver']
-            self.niter = config['tclean']['niter']
-            self.cyclefactor = config['tclean']['cyclefactor']
-            self.scales = config['tclean']['scales']
-            self.interactive = config['tclean']['interactive']
+            self.niter = config['tclean-second-cycle']['niter']
+            self.calcres = config['tclean-second-cycle']['calcres']
+            self.calcpsf = config['tclean-second-cycle']['calcpsf']
 
