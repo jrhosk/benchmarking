@@ -1,14 +1,15 @@
 import yaml
 import param
+import numpy as np
 
 class TCleanOptionsBaseClass(param.Parameterized):
     vis = param.String(default="E2E6.1.00034.S_tclean.ms", doc="Measurement file.") 
     imagename = param.String(default="standard_cube", doc="Name stub of output file.") 
-    imsize = param.ListSelector(default=[80, 80])
+    imsize = param.Array(np.array([80, 80]))
     cell = param.String(default="1.1arcsec", doc="Cell size") 
     specmode = param.String(default="cube", doc="Specmode") 
     interpolation = param.String(default="nearest", doc="") 
-    nchan = param.Integer(508, bounds=(1, 5000))
+    nchan = param.Integer(508, bounds=(1, 580))
     start = param.String(default="220.2526743594GHz", doc="") 
     width = param.String(default="0.2441741MHz", doc="") 
     pblimit = param.Number(0.2)
@@ -16,7 +17,7 @@ class TCleanOptionsBaseClass(param.Parameterized):
     niter = param.Integer(1, bounds=(0, None))
     cyclefactor = param.Integer(2, bounds=(1, 50))
     scales = param.ListSelector(default=[0, 3, 10], objects=[0, 3, 5, 7, 9, 10], precedence=0.5)
-    interactive = param.Integer(0, doc="Interactive mode")
+    interactive = param.Integer(0, bounds=(0,1), doc="Interactive mode")
     field = param.String(default='1')
     spw = param.ListSelector(default=['0'])
     antenna = param.ListSelector(default=['0,1,2,3,4,5,6,7,8'])
