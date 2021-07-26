@@ -86,8 +86,7 @@ from casatestutils import generate_weblog
 from casatestutils import add_to_dict
 from casatestutils import stats_dict
 
-from tclean_options import TCleanOptionsBaseClass
-
+from stakeholder_tools.tclean_options import TCleanOptionsBaseClass
 
 CASA6 = False
 try:
@@ -628,7 +627,7 @@ class Test_standard(test_tclean_base):
             restoringbeam=self.restoringbeam, 
             robust=self.robust, 
             npixels=self.npixels, 
-            niter=self.niter, 
+            niter=0, 
             threshold=self.threshold, 
             nsigma=self.nsigma, 
             interactive=self.interactive, 

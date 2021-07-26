@@ -10,19 +10,19 @@ from bokeh.models import BoxAnnotation, PreText, Range1d, LinearAxis, Span, Hove
 from bokeh.events import SelectionGeometry
 from bokeh.plotting import ColumnDataSource, figure, show
 
-import notebook_testing as nt
+import stakeholder_tools.notebook_testing as nt
 
-from tclean_options import TCleanOptionsBaseClass
+from stakeholder_tools.tclean_options import TCleanOptionsBaseClass
 
 class TCleanPanel(TCleanOptionsBaseClass):
     
-    def __init__(self, terminal=False):
+    def __init__(self, terminal=False, config_file='config/tclean.yaml'):
         self.terminal = terminal
 
         self.standard = nt.Test_standard()
         self.standard.setUp()
 
-        self.standard.read_configuration('config/tclean.yaml')
+        self.standard.read_configuration(config_file)
         
         # Image
 
@@ -38,7 +38,7 @@ class TCleanPanel(TCleanOptionsBaseClass):
         self.npixels_widget = pn.Param(
             self.standard.param.npixels, 
             widgets={
-                'npixel': pn.widgets.IntInput
+                'npixels': pn.widgets.IntInput
         })
 
         # Analysis
@@ -92,6 +92,143 @@ class TCleanPanel(TCleanOptionsBaseClass):
                 'scales': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
         })
 
+        self.field_widget = pn.Param(
+            TCleanOptionsBaseClass.param.field, 
+            widgets={
+                'field': pn.widgets.TextInput
+        })
+
+        self.spw_widget = pn.Param(
+            self.standard.param.spw, 
+            widgets={
+                'spw': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
+        })
+
+        self.antenna_widget = pn.Param(
+            self.standard.param.antenna, 
+            widgets={
+                'antenna': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
+        })
+
+        self.scan_widget = pn.Param(
+            self.standard.param.scan, 
+            widgets={
+                'scan': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
+        })
+
+        self.intent_widget = pn.Param(
+            self.standard.param.intent, 
+            widgets={
+                'intent': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
+        })
+
+        self.datacolumn_widget = pn.Param(
+            self.standard.param.datacolumn, 
+            widgets={
+                'datacolumn': pn.widgets.TextInput,
+        })
+
+        self.stokes_widget = pn.Param(
+            self.standard.param.stokes, 
+            widgets={
+                'stokes': pn.widgets.TextInput,
+        })
+
+        self.outframe_widget = pn.Param(
+            self.standard.param.deconvolver, 
+            widgets={
+                'outframe': {'widget_type': pn.widgets.Select, 'options': ['LSRK', 'LSRD', 'BARY', 'GEO', 'TOPO', 'GALACTO', 'LGROUP', 'CMB']}
+        })
+
+        self.gridder_widget = pn.Param(
+            self.standard.param.deconvolver, 
+            widgets={
+                'gridder': {'widget_type': pn.widgets.Select, 'options': ['standard', 'wproject', 'widefield', 'mosaic', 'awproject']}
+        })
+
+        self.weighting_widget = pn.Param(
+            self.standard.param.weighting, 
+            widgets={
+                'weighting': {'widget_type': pn.widgets.Select, 'options': ['natural', 'uniform', 'briggs', 'superuniform', 'radial', 'briggsabs', 'briggsbwtaper']}
+        })
+
+        self.restoringbeam_widget = pn.Param(
+            self.standard.param.restoringbeam, 
+            widgets={
+                'restoringbeam': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
+        })
+
+        self.robust_widget = pn.Param(
+            self.standard.param.robust, 
+            widgets={
+                'robust': pn.widgets.FloatInput,
+        })
+
+        self.threshold_widget = pn.Param(
+            self.standard.param.threshold, 
+            widgets={
+                'threshold': pn.widgets.TextInput,
+        })
+
+        self.nsigma_widget = pn.Param(
+            self.standard.param.nsigma, 
+            widgets={
+                'nsigma': pn.widgets.FloatInput,
+        })
+
+        self.usemask_widget = pn.Param(
+            self.standard.param.usemask, 
+            widgets={
+                'usemask': pn.widgets.TextInput,
+        })
+
+        self.sidelobethreshold_widget = pn.Param(
+            self.standard.param.sidelobethreshold, 
+            widgets={
+                'sidelodethreshold': pn.widgets.FloatInput,
+        })
+
+        self.noisethreshold_widget = pn.Param(
+            self.standard.param.noisethreshold, 
+            widgets={
+                'noisethreshold': pn.widgets.FloatInput,
+        })
+
+        self.lownoisethreshold_widget = pn.Param(
+            self.standard.param.lownoisethreshold, 
+            widgets={
+                'lownoisethreshold': pn.widgets.FloatInput,
+        })
+
+        self.negativethreshold_widget = pn.Param(
+            self.standard.param.negativethreshold, 
+            widgets={
+                'negativethreshold': pn.widgets.FloatInput,
+        })
+
+        self.minbeamfrac_widget = pn.Param(
+            self.standard.param.minbeamfrac, 
+            widgets={
+                'minbeamfrac': pn.widgets.FloatInput,
+        })
+
+        self.growiterations_widget = pn.Param(
+            self.standard.param.growiterations, 
+            widgets={
+                'growiterations': pn.widgets.IntInput,
+        })
+
+        self.minpercentchange_widget = pn.Param(
+            self.standard.param.minpercentchange, 
+            widgets={
+                'minpercentchange': pn.widgets.FloatInput,
+        })
+
+        self.savemodel_widget = pn.Param(
+            self.standard.param.savemodel, 
+            widgets={
+                'savemodel': pn.widgets.TextInput,
+        })
 
         # Iteration
 
@@ -100,22 +237,71 @@ class TCleanPanel(TCleanOptionsBaseClass):
             widgets={
                 'nchan': pn.widgets.IntSlider
             })
+        
+        self.niter_widget = pn.Param(
+            self.standard.param.niter, 
+            widgets={
+                'niter': pn.widgets.IntInput,
+        })
 
         self.terminal_widget = pn.widgets.Terminal(
             "CASA TClean Terminal Experience\n\n",
             options={"cursorBlink": True},
-            height=500, width=1000,
+            height=800, width=900,
             name='Terminal'
         )
         
         sys.stdout = self.terminal_widget
+        sys.stderr = self.terminal_widget
+
+        # Boolean
 
         self.interactive_widget = pn.widgets.Toggle(
-            name="Interactive", 
+            name='Interactive', 
             button_type='primary'
         )
         
         self.interactive_widget.param.watch(self.set_interactive, 'value')
+
+        self.perchanweightdensity_widget = pn.widgets.Toggle(
+            name='perchanweightdensity', 
+            button_type='primary'
+        )
+
+        self.mosweight_widget = pn.widgets.Toggle(
+            name='mosweight', 
+            button_type='primary'
+        )
+
+        self.usepointing_widget = pn.widgets.Toggle(
+            name='usepointing', 
+            button_type='primary'
+        )
+
+        self.restoration_widget = pn.widgets.Toggle(
+            name='restoration', 
+            button_type='primary'
+        )
+
+        self.dogrowprune_widget = pn.widgets.Toggle(
+            name='dogrowprune', 
+            button_type='primary'
+        )
+
+        self.fastnoise_widget = pn.widgets.Toggle(
+            name='fastnoise', 
+            button_type='primary'
+        )
+
+        self.parallel_widget = pn.widgets.Toggle(
+            name='parallel', 
+            button_type='primary'
+        )
+
+        self.verbose_widget = pn.widgets.Toggle(
+            name='verbose', 
+            button_type='primary'
+        )
 
         # ------------------------------------ #
     
@@ -128,23 +314,65 @@ class TCleanPanel(TCleanOptionsBaseClass):
         self.play_button.on_click(self.clean)
     
     
-        simple_controls = pn.Column(
+        image_controls = pn.Column(
             self.imsize_widget,
             self.cell_widget,
             self.specmode_widget,
+            self.npixels_widget,
+            self.start_widget,
+            self.width_widget,
+            self.stokes_widget,
             self.nchan_widget,
-            self.interactive_widget,
+            self.niter_widget,
+            self.play_button
+        )
+
+        analysis_controls = pn.Column(
+            self.interpolation_widget,
+            self.deconvolver_widget,
             self.scales_widget,
+            self.field_widget,
+            self.spw_widget,
+            self.antenna_widget,
+            self.scan_widget,
+            self.intent_widget,
+            self.datacolumn_widget,
+            self.outframe_widget,
+            self.gridder_widget,
+            self.weighting_widget,
+            self.restoringbeam_widget,
+            self.robust_widget,
+            self.threshold_widget,
+            self.nsigma_widget,
+            self.usemask_widget,
+            self.sidelobethreshold_widget,
+            self.noisethreshold_widget,
+            self.lownoisethreshold_widget,
+            self.negativethreshold_widget,
+            self.minbeamfrac_widget,
+            self.growiterations_widget,
+            self.savemodel_widget,
+            self.play_button
+        )
+
+        boolean_controls = pn.Column(
+            self.perchanweightdensity_widget,
+            self.mosweight_widget,
+            self.usepointing_widget,
+            self.dogrowprune_widget,
+            self.fastnoise_widget,
+            self.parallel_widget,
+            self.verbose_widget,
             self.play_button
         )
         
-        advanced_controls = pn.Column(
-            self.play_button)
-    
+            
         if self.terminal is True:
             self.layout = pn.Column(
                 self.file_widget, 
-                pn.Tabs(('Simple', simple_controls), ('Advanced', advanced_controls)),
+                pn.Tabs(('Image', image_controls), 
+                        ('Analysis', analysis_controls),
+                        ('Boolean', boolean_controls)),
                 self.terminal_widget,
             )
             self.layout.show()
@@ -153,22 +381,23 @@ class TCleanPanel(TCleanOptionsBaseClass):
             pn.Column(
                 pn.Card(
                     self.file_widget, 
-                    width=800, 
+                    width=900, 
                     header_background = '#21618C',
                     header_color = 'white', 
                     title='File Selector'),
                 pn.Card( 
                     pn.Tabs(
-                        ('Simple', simple_controls), 
-                        ('Advanced', advanced_controls)), 
-                    width=800,
+                        ('Image', image_controls), 
+                        ('Analysis', analysis_controls),
+                        ('Boolean', boolean_controls)), 
+                    width=900,
                     header_background=' #21618C',
                     header_color = 'white', 
                     title='TClean Controls'
                 ),
                 pn.Card(
                     self.terminal_widget, 
-                    width=800, 
+                    width=900, 
                     header_background=' #21618C',
                     header_color = 'white', 
                     title='Terminal')
@@ -188,4 +417,28 @@ class TCleanPanel(TCleanOptionsBaseClass):
                 self.interactive = 0
             else:
                 pass
+    
+    def set_perchanweightdensity(self, event):
+        self.perchanweightdensity = self.perchanweightdensity_widget.value
+
+    def set_mosweight(self, event):
+        self.mosweight = self.mosweight_widget.value
+
+    def set_usepointing(self, event):
+        self.usepointing = self.usepointing_widget.value
+
+    def set_restoration(self, event):
+        self.restoration = self.restoration_widget.value
+
+    def set_dogrowprune(self, event):
+        self.dogrowprune = self.dogrowprune_widget.value
+
+    def set_fastnoise(self, event):
+        self.fastnoise = self.fastnoise_widget.value
+
+    def set_parallel(self, event):
+        self.parallel = self.parallel_widget.value
+
+    def set_verbose(self, event):
+        self.verbose = self.verbose_widget.value
         
