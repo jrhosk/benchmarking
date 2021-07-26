@@ -16,7 +16,7 @@ class TCleanOptionsBaseClass(param.Parameterized):
     deconvolver = param.String(default="hogbom", doc="") 
     niter = param.Integer(1, bounds=(0, None))
     cyclefactor = param.Integer(2, bounds=(1, 50))
-    scales = param.ListSelector(default=[0, 3, 10], objects=[0, 3, 5, 7, 9, 10], precedence=0.5)
+    scales = param.List([0, 3, 10], item_type=int)
     interactive = param.Integer(0, bounds=(0,1), doc="Interactive mode")
     field = param.String(default='1')
     spw = param.ListSelector(default=['0'])

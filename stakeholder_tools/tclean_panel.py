@@ -17,7 +17,6 @@ from tclean_options import TCleanOptionsBaseClass
 class TCleanPanel(TCleanOptionsBaseClass):
     
     def __init__(self, terminal=False):
-        #pn.extension(sizing_mode='stretch_width')
         self.terminal = terminal
 
         self.standard = nt.Test_standard()
@@ -25,37 +24,81 @@ class TCleanPanel(TCleanOptionsBaseClass):
 
         self.standard.read_configuration('config/tclean.yaml')
         
-        self.file_widget = pn.widgets.FileSelector(os.getcwd(), name="File Selector")
+        # Image
+
+        self.file_widget = pn.widgets.FileSelector(os.getcwd() + '/../', name="File Selector")
         self.file_widget.param.watch(self.update, 'value')
         
-        imsize_widget = pn.Param(
+        self.imsize_widget = pn.Param(
             self.standard.param.imsize, 
             widgets={
                 'imsize': pn.widgets.LiteralInput
-            })
+        })
         
-        cell_widget = pn.Param(
+        self.npixels_widget = pn.Param(
+            self.standard.param.npixels, 
+            widgets={
+                'npixel': pn.widgets.IntInput
+        })
+
+        # Analysis
+
+        self.cell_widget = pn.Param(
             self.standard.param.cell, 
             widgets={
                 'cell': pn.widgets.TextInput
-            })
+        })
         
-        specmode_widget = pn.Param(
-            self.standard.param.specmode, 
+        self.specmode_widget = pn.Param(
+            TCleanOptionsBaseClass.param.specmode, 
             widgets={
-                'specmode': pn.widgets.TextInput
-            })
+                'specmode': {'widget_type': pn.widgets.Select, 'options':['mfs', 'cube', 'cubedata']}
+        })
+
+        self.interpolation_widget = pn.Param(
+            self.standard.param.interpolation, 
+            widgets={
+                'Interpolation': {'widget_type': pn.widgets.Select, 'options': ['nearest', 'linear', 'cubic']}
+        })
+
+        self.start_widget = pn.Param(
+            TCleanOptionsBaseClass.param.start, 
+            widgets={
+                'start': pn.widgets.TextInput
+        })
         
-        nchan_widget = pn.Param(
+        self.width_widget = pn.Param(
+            TCleanOptionsBaseClass.param.width, 
+            widgets={
+                'width': pn.widgets.TextInput
+        })
+
+        self.pblimit_widget = pn.Param(
+            TCleanOptionsBaseClass.param.pblimit, 
+            widgets={
+                'pblimit': pn.widgets.FloatInput
+        })
+
+        self.deconvolver_widget = pn.Param(
+            self.standard.param.deconvolver, 
+            widgets={
+                'deconvolver': {'widget_type': pn.widgets.Select, 'options': ['hogbom', 'clark', 'multiscale', 'mtmfs', 'mem', 'clarkstokes']}
+        })
+
+
+        self.scales_widget = pn.Param(
+            self.standard.param.scales, 
+            widgets={
+                'scales': {'widget_type': pn.widgets.LiteralInput, 'type':  list}
+        })
+
+
+        # Iteration
+
+        self.nchan_widget = pn.Param(
             self.standard.param.nchan, 
             widgets={
                 'nchan': pn.widgets.IntSlider
-            })
-        
-        interactive_widget = pn.Param(
-            self.standard.param.interactive, 
-            widgets={
-                'interactive': pn.widgets.IntInput
             })
 
         self.terminal_widget = pn.widgets.Terminal(
@@ -67,23 +110,31 @@ class TCleanPanel(TCleanOptionsBaseClass):
         
         sys.stdout = self.terminal_widget
 
+        self.interactive_widget = pn.widgets.Toggle(
+            name="Interactive", 
+            button_type='primary'
+        )
+        
+        self.interactive_widget.param.watch(self.set_interactive, 'value')
+
         # ------------------------------------ #
     
         self.play_button = pn.widgets.Button(
             name="Play", 
             button_type="success",  
-            margin=(5,1,5,1), 
-            sizing_mode='stretch_width') 
+            width=300
+        )  
         
         self.play_button.on_click(self.clean)
     
     
         simple_controls = pn.Column(
-            imsize_widget,
-            cell_widget,
-            specmode_widget,
-            nchan_widget,
-            interactive_widget,
+            self.imsize_widget,
+            self.cell_widget,
+            self.specmode_widget,
+            self.nchan_widget,
+            self.interactive_widget,
+            self.scales_widget,
             self.play_button
         )
         
@@ -98,17 +149,43 @@ class TCleanPanel(TCleanOptionsBaseClass):
             )
             self.layout.show()
         else:
-            self.layout = pn.Column(
-                pn.Accordion(self.file_widget),
-                pn.Accordion( 
-                    ("TClean", pn.Tabs(('Simple', simple_controls), ('Advanced', advanced_controls)))
+            self.layout = pn.Row(
+            pn.Column(
+                pn.Card(
+                    self.file_widget, 
+                    width=800, 
+                    header_background = '#21618C',
+                    header_color = 'white', 
+                    title='File Selector'),
+                pn.Card( 
+                    pn.Tabs(
+                        ('Simple', simple_controls), 
+                        ('Advanced', advanced_controls)), 
+                    width=800,
+                    header_background=' #21618C',
+                    header_color = 'white', 
+                    title='TClean Controls'
                 ),
-                pn.Accordion(self.terminal_widget),
+                pn.Card(
+                    self.terminal_widget, 
+                    width=800, 
+                    header_background=' #21618C',
+                    header_color = 'white', 
+                    title='Terminal')
             )
+        )
     
     def update(self, event):
             self.vis = self.file_widget.value[0]
 
     def clean(self, event):
         self.standard.test_standard_cube()
+    
+    def set_interactive(self, event):
+            if self.interactive_widget.value is True:
+                self.interactive = 1
+            elif self.interactive_widget.value is False:
+                self.interactive = 0
+            else:
+                pass
         
