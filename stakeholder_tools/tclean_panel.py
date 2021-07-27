@@ -10,9 +10,9 @@ from bokeh.models import BoxAnnotation, PreText, Range1d, LinearAxis, Span, Hove
 from bokeh.events import SelectionGeometry
 from bokeh.plotting import ColumnDataSource, figure, show
 
-import stakeholder_tools.notebook_testing as nt
+import benchmarking.stakeholder_tools.notebook_testing as nt
 
-from stakeholder_tools.tclean_options import TCleanOptionsBaseClass
+from tclean_options import TCleanOptionsBaseClass
 
 class TCleanPanel(TCleanOptionsBaseClass):
     
@@ -370,9 +370,11 @@ class TCleanPanel(TCleanOptionsBaseClass):
         if self.terminal is True:
             self.layout = pn.Column(
                 self.file_widget, 
-                pn.Tabs(('Image', image_controls), 
-                        ('Analysis', analysis_controls),
-                        ('Boolean', boolean_controls)),
+                pn.Tabs(
+                    ('Image', image_controls), 
+                    ('Analysis', analysis_controls),
+                    ('Boolean', boolean_controls)
+                ),
                 self.terminal_widget,
             )
             self.layout.show()

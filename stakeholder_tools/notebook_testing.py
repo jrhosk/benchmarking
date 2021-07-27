@@ -86,7 +86,7 @@ from casatestutils import generate_weblog
 from casatestutils import add_to_dict
 from casatestutils import stats_dict
 
-from stakeholder_tools.tclean_options import TCleanOptionsBaseClass
+from benchmarking.stakeholder_tools.tclean_options import TCleanOptionsBaseClass
 
 CASA6 = False
 try:
