@@ -12,7 +12,7 @@ from bokeh.plotting import ColumnDataSource, figure, show
 
 import benchmarking.stakeholder_tools.notebook_testing as nt
 
-from tclean_options import TCleanOptionsBaseClass
+from benchmarking.stakeholder_tools.tclean_options import TCleanOptionsBaseClass
 
 class TCleanPanel(TCleanOptionsBaseClass):
     
