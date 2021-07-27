@@ -4,7 +4,7 @@ casatasks==6.2.0.124
 casatestutils==6.2.0.124
 casatools==6.2.0.124
 casaviewer==1.2.1a13492.dev1
-casadata==2021.4.26
+casadata
 certifi==2021.5.30
 charset-normalizer==2.0.3
 cycler==0.10.0
