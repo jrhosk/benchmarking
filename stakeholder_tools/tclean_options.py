@@ -55,6 +55,8 @@ class TCleanOptionsBaseClass(param.Parameterized):
     restart = param.Boolean(False)
     calcres = param.Boolean(True)
     calcpsf = param.Boolean(True)
+
+    config_file = param.String(default="config/tclean.yaml")
     
     def read_configuration(self, config:str)->None:
         with open(config) as file:

@@ -651,12 +651,12 @@ class Test_standard(test_tclean_base):
         self.copy_products(file_name+'0', file_name+'1')
 
         print("STARTING: iter1 routine")
-        self.read_configuration(sys.argv[0] + 'config/tclean.yaml')
+        self.read_configuration(os.path.dirname(os.path.realpath(__file__)) + '/config/tclean.yaml')
 
         # iter1 (restart)
         if self.parallel:
             tclean(
-                vis='../data/' + self.vis, 
+                vis=self.vis, 
                 imagename=file_name+'1', 
                 field=self.field,
                 spw=self.spw, 
@@ -712,7 +712,7 @@ class Test_standard(test_tclean_base):
 
         else:
             tclean(
-                vis='../data/' + self.vis, 
+                vis=self.vis, 
                 imagename=file_name+'1', 
                 field=self.field,
                 spw=self.spw, 

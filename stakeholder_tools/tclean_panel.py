@@ -22,8 +22,6 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         self.config_file = config_file
         self.standard = nt.Test_standard()
         self.standard.setUp()
-
-        #self.standard.read_configuration(config_file)
         
         # Image
 
@@ -248,7 +246,7 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         self.terminal_widget = pn.widgets.Terminal(
             "CASA TClean Terminal Experience\n\n",
             options={"cursorBlink": True},
-            height=800, width=900,
+            height=1100, width=900,
             name='Terminal'
         )
         
@@ -329,31 +327,36 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         )
 
         analysis_controls = pn.Column(
-            self.interpolation_widget,
-            self.deconvolver_widget,
-            self.scales_widget,
-            self.field_widget,
-            self.spw_widget,
-            self.antenna_widget,
-            self.scan_widget,
-            self.intent_widget,
-            self.datacolumn_widget,
-            self.outframe_widget,
-            self.gridder_widget,
-            self.weighting_widget,
-            self.restoringbeam_widget,
-            self.robust_widget,
-            self.threshold_widget,
-            self.nsigma_widget,
-            self.usemask_widget,
-            self.sidelobethreshold_widget,
-            self.noisethreshold_widget,
-            self.lownoisethreshold_widget,
-            self.negativethreshold_widget,
-            self.minbeamfrac_widget,
-            self.growiterations_widget,
-            self.savemodel_widget,
-            self.play_button
+            pn.Row(
+                pn.Column(
+                    self.interpolation_widget,
+                    self.deconvolver_widget,
+                    self.scales_widget,
+                    self.field_widget,
+                    self.spw_widget,
+                    self.antenna_widget,
+                    self.scan_widget,
+                    self.intent_widget,
+                    self.datacolumn_widget,
+                    self.outframe_widget,
+                    self.gridder_widget,
+                ),
+                pn.Column(
+                    self.weighting_widget,
+                    self.restoringbeam_widget,
+                    self.robust_widget,
+                    self.threshold_widget,
+                    self.nsigma_widget,
+                    self.usemask_widget,
+                    self.sidelobethreshold_widget,
+                    self.noisethreshold_widget,
+                    self.lownoisethreshold_widget,
+                    self.negativethreshold_widget,
+                    self.minbeamfrac_widget,
+                    self.growiterations_widget,
+                    self.savemodel_widget
+                )
+            ), self.play_button
         )
 
         boolean_controls = pn.Column(
@@ -369,15 +372,17 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         
             
         if self.terminal is True:
-            self.layout = pn.Column(
-                self.file_widget, 
-                pn.Tabs(
-                    ('Image', image_controls), 
-                    ('Analysis', analysis_controls),
-                    ('Boolean', boolean_controls)
-                ),
-                self.terminal_widget,
+            self.layout = pn.Row(
+                pn.Column(
+                    self.file_widget, 
+                    pn.Tabs(
+                        ('Image', image_controls), 
+                        ('Analysis', analysis_controls),
+                        ('Boolean', boolean_controls)
+                    )
+                ), self.terminal_widget,
             )
+            
             self.layout.show()
         else:
             self.layout = pn.Row(
