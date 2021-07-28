@@ -651,7 +651,7 @@ class Test_standard(test_tclean_base):
         self.copy_products(file_name+'0', file_name+'1')
 
         print("STARTING: iter1 routine")
-        self.read_configuration(os.path.dirname(os.path.realpath(__file__)) + '/config/tclean.yaml')
+        self.read_configuration(self.config_file)
 
         # iter1 (restart)
         if self.parallel:

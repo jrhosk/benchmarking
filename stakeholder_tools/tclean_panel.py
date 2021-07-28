@@ -16,12 +16,13 @@ from . import tclean_options
 
 class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
     
-    def __init__(self, terminal=False, config_file='config/tclean.yaml'):
+    def __init__(self, terminal=False, config_file=os.path.dirname(os.path.realpath(__file__)) + '/config/tclean.yaml'):
         self.terminal = terminal
 
         self.config_file = config_file
         self.standard = nt.Test_standard()
         self.standard.setUp()
+        self.standard.config_file = config_file
         
         # Image
 
