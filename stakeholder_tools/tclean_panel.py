@@ -10,24 +10,25 @@ from bokeh.models import BoxAnnotation, PreText, Range1d, LinearAxis, Span, Hove
 from bokeh.events import SelectionGeometry
 from bokeh.plotting import ColumnDataSource, figure, show
 
-import benchmarking.stakeholder_tools.notebook_testing as nt
+from . import notebook_testing as nt
 
-from benchmarking.stakeholder_tools.tclean_options import TCleanOptionsBaseClass
+from . import tclean_options 
 
-class TCleanPanel(TCleanOptionsBaseClass):
+class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
     
     def __init__(self, terminal=False, config_file='config/tclean.yaml'):
         self.terminal = terminal
 
+        self.config_file = config_file
         self.standard = nt.Test_standard()
         self.standard.setUp()
 
-        self.standard.read_configuration(config_file)
+        #self.standard.read_configuration(config_file)
         
         # Image
 
-        self.file_widget = pn.widgets.FileSelector(os.getcwd() + '/../', name="File Selector")
-        self.file_widget.param.watch(self.update, 'value')
+        self.file_widget = pn.widgets.FileSelector(os.getcwd(), name="File Selector")
+        self.file_widget.param.watch(self.update_file, 'value')
         
         self.imsize_widget = pn.Param(
             self.standard.param.imsize, 
@@ -50,7 +51,7 @@ class TCleanPanel(TCleanOptionsBaseClass):
         })
         
         self.specmode_widget = pn.Param(
-            TCleanOptionsBaseClass.param.specmode, 
+            self.standard.param.specmode, 
             widgets={
                 'specmode': {'widget_type': pn.widgets.Select, 'options':['mfs', 'cube', 'cubedata']}
         })
@@ -62,19 +63,19 @@ class TCleanPanel(TCleanOptionsBaseClass):
         })
 
         self.start_widget = pn.Param(
-            TCleanOptionsBaseClass.param.start, 
+            self.standard.param.start, 
             widgets={
                 'start': pn.widgets.TextInput
         })
         
         self.width_widget = pn.Param(
-            TCleanOptionsBaseClass.param.width, 
+            self.standard.param.width, 
             widgets={
                 'width': pn.widgets.TextInput
         })
 
         self.pblimit_widget = pn.Param(
-            TCleanOptionsBaseClass.param.pblimit, 
+            self.standard.param.pblimit, 
             widgets={
                 'pblimit': pn.widgets.FloatInput
         })
@@ -93,7 +94,7 @@ class TCleanPanel(TCleanOptionsBaseClass):
         })
 
         self.field_widget = pn.Param(
-            TCleanOptionsBaseClass.param.field, 
+            self.standard.param.field, 
             widgets={
                 'field': pn.widgets.TextInput
         })
@@ -406,41 +407,42 @@ class TCleanPanel(TCleanOptionsBaseClass):
             )
         )
     
-    def update(self, event):
-            self.vis = self.file_widget.value[0]
+    def update_file(self, event):
+            self.standard.vis = self.file_widget.value[0]
+            print('Selected file: ' + self.standard.vis)
 
     def clean(self, event):
         self.standard.test_standard_cube()
     
     def set_interactive(self, event):
             if self.interactive_widget.value is True:
-                self.interactive = 1
+                self.standard.interactive = 1
             elif self.interactive_widget.value is False:
-                self.interactive = 0
+                self.standard.interactive = 0
             else:
                 pass
     
     def set_perchanweightdensity(self, event):
-        self.perchanweightdensity = self.perchanweightdensity_widget.value
+        self.standard.perchanweightdensity = self.perchanweightdensity_widget.value
 
     def set_mosweight(self, event):
-        self.mosweight = self.mosweight_widget.value
+        self.standard.mosweight = self.mosweight_widget.value
 
     def set_usepointing(self, event):
-        self.usepointing = self.usepointing_widget.value
+        self.standard.usepointing = self.usepointing_widget.value
 
     def set_restoration(self, event):
-        self.restoration = self.restoration_widget.value
+        self.standard.restoration = self.restoration_widget.value
 
     def set_dogrowprune(self, event):
-        self.dogrowprune = self.dogrowprune_widget.value
+        self.standard.dogrowprune = self.dogrowprune_widget.value
 
     def set_fastnoise(self, event):
-        self.fastnoise = self.fastnoise_widget.value
+        self.standard.fastnoise = self.fastnoise_widget.value
 
     def set_parallel(self, event):
-        self.parallel = self.parallel_widget.value
+        self.standard.parallel = self.parallel_widget.value
 
     def set_verbose(self, event):
-        self.verbose = self.verbose_widget.value
+        self.standard.verbose = self.verbose_widget.value
         

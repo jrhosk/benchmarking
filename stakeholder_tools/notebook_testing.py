@@ -598,7 +598,7 @@ class Test_standard(test_tclean_base):
         print("\nSTARTING: iter0 routine")
         
         tclean(
-            vis='../data/' + self.vis, 
+            vis=self.vis, 
             imagename=file_name+'0', 
             field=self.field, 
             spw=self.spw, 
@@ -651,7 +651,7 @@ class Test_standard(test_tclean_base):
         self.copy_products(file_name+'0', file_name+'1')
 
         print("STARTING: iter1 routine")
-        self.read_configuration('config/tclean.yaml')
+        self.read_configuration(sys.argv[0] + 'config/tclean.yaml')
 
         # iter1 (restart)
         if self.parallel:
