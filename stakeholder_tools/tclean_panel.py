@@ -27,7 +27,7 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         # Image
 
         self.file_widget = pn.widgets.FileSelector(os.getcwd(), name="File Selector")
-        self.file_widget.param.watch(self.update_file, 'value')
+        self.file_widget.param.watch(self._update_file, 'value')
         
         self.imsize_widget = pn.Param(
             self.standard.param.imsize, 
@@ -245,14 +245,11 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         })
 
         self.terminal_widget = pn.widgets.Terminal(
-            "CASA TClean Terminal Experience\n\n",
+            "CASA TClean Terminal\n\n",
             options={"cursorBlink": True},
             height=1100, width=900,
             name='Terminal'
         )
-        
-        sys.stdout = self.terminal_widget
-        sys.stderr = self.terminal_widget
 
         # Boolean
 
@@ -261,47 +258,55 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
             button_type='primary'
         )
         
-        self.interactive_widget.param.watch(self.set_interactive, 'value')
+        self.interactive_widget.param.watch(self._set_interactive, 'value')
 
         self.perchanweightdensity_widget = pn.widgets.Toggle(
             name='perchanweightdensity', 
             button_type='primary'
         )
+        self.perchanweightdensity_widget.param.watch(self._set_perchanweightdensity, 'value')
 
         self.mosweight_widget = pn.widgets.Toggle(
             name='mosweight', 
             button_type='primary'
         )
+        self.mosweight_widget.param.watch(self._set_mosweight, 'value')
 
         self.usepointing_widget = pn.widgets.Toggle(
             name='usepointing', 
             button_type='primary'
         )
+        self.usepointing_widget.param.watch(self._set_usepointing, 'value')
 
         self.restoration_widget = pn.widgets.Toggle(
             name='restoration', 
             button_type='primary'
         )
+        self.restoration_widget.param.watch(self._set_restoration, 'value')
 
         self.dogrowprune_widget = pn.widgets.Toggle(
             name='dogrowprune', 
             button_type='primary'
         )
+        self.dogrowprune_widget.param.watch(self._set_dogrowprune, 'value')
 
         self.fastnoise_widget = pn.widgets.Toggle(
             name='fastnoise', 
             button_type='primary'
         )
+        self.fastnoise_widget.param.watch(self._set_fastnoise, 'value')
 
         self.parallel_widget = pn.widgets.Toggle(
             name='parallel', 
             button_type='primary'
         )
+        self.parallel_widget.param.watch(self._set_parallel, 'value')
 
         self.verbose_widget = pn.widgets.Toggle(
             name='verbose', 
             button_type='primary'
         )
+        self.verbose_widget.param.watch(self._set_verbose, 'value')
 
         # ------------------------------------ #
     
@@ -311,7 +316,7 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
             width=300
         )  
         
-        self.play_button.on_click(self.clean)
+        self.play_button.on_click(self._clean)
     
     
         image_controls = pn.Column(
@@ -373,6 +378,8 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
         
             
         if self.terminal is True:
+            sys.stdout = self.terminal_widget
+            sys.stderr = self.terminal_widget
             self.layout = pn.Row(
                 pn.Column(
                     self.file_widget, 
@@ -386,6 +393,7 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
             
             self.layout.show()
         else:
+            self.play_button.visible = False
             self.layout = pn.Row(
             pn.Column(
                 pn.Card(
@@ -403,24 +411,24 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
                     header_background=' #21618C',
                     header_color = 'white', 
                     title='TClean Controls'
-                ),
-                pn.Card(
-                    self.terminal_widget, 
-                    width=900, 
-                    header_background=' #21618C',
-                    header_color = 'white', 
-                    title='Terminal')
+                )
             )
         )
     
-    def update_file(self, event):
+    def _update_file(self, event):
             self.standard.vis = self.file_widget.value[0]
             print('Selected file: ' + self.standard.vis)
 
-    def clean(self, event):
+    def _clean(self, event):
         self.standard.test_standard_cube()
+
+    def clean(self):
+        self.standard.test_standard_cube()
+
+    def param_panel(self):
+        return self.layout
     
-    def set_interactive(self, event):
+    def _set_interactive(self, event):
             if self.interactive_widget.value is True:
                 self.standard.interactive = 1
             elif self.interactive_widget.value is False:
@@ -428,27 +436,27 @@ class TCleanPanel(tclean_options.TCleanOptionsBaseClass):
             else:
                 pass
     
-    def set_perchanweightdensity(self, event):
+    def _set_perchanweightdensity(self, event):
         self.standard.perchanweightdensity = self.perchanweightdensity_widget.value
 
-    def set_mosweight(self, event):
+    def _set_mosweight(self, event):
         self.standard.mosweight = self.mosweight_widget.value
 
-    def set_usepointing(self, event):
+    def _set_usepointing(self, event):
         self.standard.usepointing = self.usepointing_widget.value
 
-    def set_restoration(self, event):
+    def _set_restoration(self, event):
         self.standard.restoration = self.restoration_widget.value
 
-    def set_dogrowprune(self, event):
+    def _set_dogrowprune(self, event):
         self.standard.dogrowprune = self.dogrowprune_widget.value
 
-    def set_fastnoise(self, event):
+    def _set_fastnoise(self, event):
         self.standard.fastnoise = self.fastnoise_widget.value
 
-    def set_parallel(self, event):
+    def _set_parallel(self, event):
         self.standard.parallel = self.parallel_widget.value
 
-    def set_verbose(self, event):
+    def _set_verbose(self, event):
         self.standard.verbose = self.verbose_widget.value
         
